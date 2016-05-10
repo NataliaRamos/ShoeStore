@@ -1,0 +1,82 @@
+<a href="/shoes">Go To All Products</a>
+<a href="/mains">Logout</a>
+
+<h1> Hi <%= @seller.first_name %></h1>
+
+<h3>Sell Product</h3>
+<form action="/shoes" method="post">
+  <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+  <input type="hidden" name="shoe[seller_id]">
+  Name: <input id="name" type="text" name="shoe[name]"><br>
+  Amount: <input type="number" name="shoe[amount]" min="0.00"><br>
+  <input type="submit" value="Sell">
+</form>
+
+<h3>Your products that are not yet sold:</h3>
+<table>
+  <thead>
+    <tr>
+      <td>Product</td>
+      <td>Date Posted</td>
+      <td>Amount</td>
+      <td>Action</td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @shoe.each do |x| %>
+    <tr>
+      <td><%= x.name %></td>
+      <td><%= x.created_at.strftime('%B %e, %Y') %></td>
+      <td><%= number_to_currency(x.amount) %></td>
+      <td><%= button_to "Delete", {action: "destroy", controller: :shoes, :id => x.id}, method: :delete%></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h3>Sales</h3>
+<table>
+  <thead>
+    <tr>
+      <td>Product</td>
+      <td>Date Bought</td>
+      <td>Buyer</td>
+      <td>Amount</td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @sales.each do |sale| %>
+    <tr>
+      <td><%= sale.shoe.name %></td>
+      <td><%= sale.shoe.created_at.strftime('%B %e, %Y')%></td>
+      <td><%= sale.buyer.name %></td>
+      <td><%= sale.shoe.amount %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+Total: <%= number_to_currency(@sales.each.inject(0) {|sum,item| sum+= item.shoe.amount.to_f}) %>
+
+
+<h3>Purchases</h3>
+<table>
+  <thead>
+    <tr>
+      <td>Product</td>
+      <td>Date Bought</td>
+      <td>Seller</td>
+      <td>Amount</td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @purchased.each do |x| %>
+    <tr>
+      <td><%= x.shoe.name %></td>
+      <td><%= x.created_at.strftime('%B %e, %Y') %></td>
+      <td><%= x.seller.name %></td>
+      <td><%= x.shoe.amount %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+Total: <%= number_to_currency(@purchased.each.inject(0) {|sum,item| sum+= item.shoe.amount.to_f}) %>
